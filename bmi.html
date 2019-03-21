@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>bmi firebase</title>
+</head>
+<body>
+	<p>使用者： </p><input id="userId"><br>
+	<p>身 高： </p><input id="height"><br>
+	<p>體 重： </p><input id="weight"><br>
+	<br>
+	<button id="btn">開始計算</button>
+	<p>BMI為: <span id="result"></span></p>
+	<h4>紀錄</h4>
+	<ul id="record">
+		
+	<ul>
+
+
+	<script src="https://www.gstatic.com/firebasejs/5.9.0/firebase.js"></script>
+    <script>
+    var config = {
+        apiKey: "AIzaSyAOdMuqReUxFaiCeykESf7yS3Pw8aXhJ7A",
+        authDomain: "crypto-gradient-221614.firebaseapp.com",
+        databaseURL: "https://crypto-gradient-221614.firebaseio.com",
+        projectId: "crypto-gradient-221614",
+        storageBucket: "crypto-gradient-221614.appspot.com",
+        messagingSenderId: "1097253754582"
+    };
+    firebase.initializeApp(config);
+
+    //dom
+    let userId = document.getElementById('userId');
+    let height = document.getElementById('height');
+	let weight = document.getElementById('weight');
+	let btn = document.getElementById('btn');
+	let result = document.getElementById('result');
+	let record = document.getElementById('record');
+
+	//get the value of text input
+	var h = '';
+	var w = '';
+	
+	//add event to button to get value
+	btn.addEventListener('click', function(){
+		u = userId.value;
+		h = height.value;
+		w = weight.value;
+		w = Number(w)
+		h = Number(h) * 0.01
+		//bmi cal
+		var bmi = Number(w) / Number(h * h);
+		result.innerHTML = bmi
+
+		//database refrence
+ 		firebase.database().ref('bmi/'+u+'/user').set(u)
+		firebase.database().ref('bmi/'+u+'/height').set(h*100 +' cm')
+		firebase.database().ref('bmi/'+u+'/weight').set(w + ' kg')
+		firebase.database().ref('bmi/'+u+'/bmi').set(bmi)
+	})
+//==========================foreach========================
+	//show records
+	//forEach
+	// ul = ''
+	// bmiRef = firebase.database().ref('bmi')
+	// bmiRef.once('value', function(snapshot){
+	// 	snapshot.forEach(function(item){
+	// 		ul += '<li>'+item.val().user+'</li><ul><li>身高：'+item.val().height+'</li><li>體重：'+item.val().weight+'</li><li>BMI：'+item.val().bmi+'</li></ul>';
+	// 	})
+	// 	record.innerHTML = ul
+	// })
+//==================normal way=========================
+	//for
+	ul = ''
+	bmiRef = firebase.database().ref('bmi')
+	bmiRef.once('value', function(snapshot){
+		data = snapshot.val()
+		for(var item in data){
+			ul += '<li>'+data[item].user+'</li><ul><li>身高：'+data[item].height+'</li><li>體重：'+data[item].weight+'</li><li>BMI：'+data[item].bmi+'</li></ul>';
+		}
+		record.innerHTML = ul
+	})
+
+	</script>
+</body>
+</html>
